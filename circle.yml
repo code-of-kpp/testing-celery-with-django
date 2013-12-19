@@ -1,0 +1,12 @@
+machine:
+  python:
+    version:
+      2.7.5
+test:
+  override:
+    - nohup bash -c './manage.py celery worker --loglevel=DEBUG --logfile=$CIRCLE_ARTIFACTS/celery.log.txt 2>&1  > $CIRCLE_ARTIFACTS/celery-console.log.txt &'
+    - ./manage.py celery call hi
+    - ./manage.py celery call hi --serializer msgpack
+    - DJANGO_SETTINGS_MODULE=testceleryserializer.settings python -c 'from django.conf.import settings; settings.DEBUG; from checkcelery.tasks import print_hello_task; print_hello_task.apply_async()'
+    - DJANGO_SETTINGS_MODULE=testceleryserializer.settings python -c 'from django.conf.import settings; from checkcelery.tasks import print_hello_task; print_hello_task.apply_async()'
+    - DJANGO_SETTINGS_MODULE=testceleryserializer.settings python -c 'from checkcelery.tasks import print_hello_task; print_hello_task.apply_async()'
