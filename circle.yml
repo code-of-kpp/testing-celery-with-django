@@ -4,6 +4,7 @@ machine:
       2.7.5
 test:
   override:
+    - ./manage.py syncdb --noinput
     - nohup bash -c './manage.py celery worker --loglevel=DEBUG --logfile=$CIRCLE_ARTIFACTS/celery.log.txt 2>&1  > $CIRCLE_ARTIFACTS/celery-console.log.txt &'
     - ./manage.py celery call hi
     - ./manage.py celery call hi --serializer msgpack
